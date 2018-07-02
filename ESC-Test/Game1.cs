@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended.Entities;
+using System.Reflection;
 
 namespace ESC_Test
 {
@@ -11,6 +13,8 @@ namespace ESC_Test
 	{
 		GraphicsDeviceManager graphics;
 		SpriteBatch spriteBatch;
+		EntityComponentSystem esc;
+		EntityManager entityManager;
 
 		public Game1()
 		{
@@ -18,15 +22,12 @@ namespace ESC_Test
 			Content.RootDirectory = "Content";
 		}
 
-		/// <summary>
-		/// Allows the game to perform any initialization it needs to before starting to run.
-		/// This is where it can query for any required services and load any non-graphic
-		/// related content.  Calling base.Initialize will enumerate through any components
-		/// and initialize them as well.
-		/// </summary>
 		protected override void Initialize()
 		{
-			// TODO: Add your initialization logic here
+			esc = new EntityComponentSystem(this);
+			entityManager = esc.EntityManager;
+			esc.Scan(Assembly.GetExecutingAssembly());
+			Services.AddService(spriteBatch);
 
 			base.Initialize();
 		}
@@ -62,7 +63,7 @@ namespace ESC_Test
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 				Exit();
 
-			// TODO: Add your update logic here
+			esc.Update(gameTime);
 
 			base.Update(gameTime);
 		}
@@ -75,7 +76,7 @@ namespace ESC_Test
 		{
 			GraphicsDevice.Clear(Color.CornflowerBlue);
 
-			// TODO: Add your drawing code here
+			esc.Draw(gameTime);
 
 			base.Draw(gameTime);
 		}
